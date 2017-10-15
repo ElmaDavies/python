@@ -1,0 +1,48 @@
+import json
+from bs4 import BeautifulSoup
+import  requests
+
+def get_link(url):
+    urls = []
+
+    list_data = requests.get(url)
+    soup = BeautifulSoup(list_data.text,'lxml')
+    for link in soup.select('tr.zzinfo td.t a.t'):
+       link_strip = link.get('href').split('?')[0]
+       if link_strip != 'http://jump.zhineng.58.com/jump':
+
+           urls.append(link_strip)
+
+    return urls
+def get_page_data(url):
+
+
+
+    web_data = requests.get(url)
+    soup  = BeautifulSoup(web_data.text,'lxml')
+
+
+
+
+
+    data ={
+
+
+            'area':soup.select('body > div.content > div > div.box_left > div.info_lubotu.clearfix > div.info_massege.left > div.palce_li > span > i')[0].text,
+            'title':soup.title.text.strip('\r\n').strip(),
+            'price':soup.select('body > div.content > div > div.box_left > div.info_lubotu.clearfix > div.info_massege.left > div.price_li > span')[0].text,
+            #'time': soup.select('#index_show > ul.mtit_con_left.fl > li.time')[0].text
+    }
+    print json.dumps(data,encoding="utf-8",ensure_ascii=False)
+
+if __name__ == '__main__':
+    url_pages = ['http://lz.58.com/shouji/0/pn{}'.format(str(i)) for i in range(1,13)]
+
+    for url_page in url_pages:
+        page_list = get_link(url_page)
+        for link in page_list:
+            get_page_data(link)
+
+
+
+
